@@ -158,13 +158,6 @@ private fun DrawScope.mainXAndYAxis() {
 }
 
 private fun DrawScope.userTouchedPoint(touchedOffset: Offset) {
-    //touch point
-    drawCircle(
-        color = Color.Black,
-        radius = 30f,
-        center = touchedOffset
-    )
-
     //line from touch point center to center of the canvas
     drawLine(
         color = Color.Red,
@@ -180,10 +173,18 @@ private fun DrawScope.userTouchedPoint(touchedOffset: Offset) {
         end = Offset(x = touchedOffset.x, y = center.y),
         strokeWidth = 1.2.dp.toPx()
     )
+
+    //touch point
+    drawCircle(
+        color = Color.Black,
+        radius = 30f,
+        center = touchedOffset
+    )
 }
 
 private fun DrawScope.highlightThetaAngle(touchedAngleIndDegrees: Float) {
-    val sizeArc = Size(width = 25.dp.toPx(), height = 25.dp.toPx())
+    val arcSize = Size(width = 35.dp.toPx(), height = 35.dp.toPx())
+
     val theta =
         calculateThetaAnglesForCircleQuarters(touchedAngleIndDegrees = touchedAngleIndDegrees)
     drawArc(
@@ -196,12 +197,9 @@ private fun DrawScope.highlightThetaAngle(touchedAngleIndDegrees: Float) {
 
         useCenter = false,
 
-        topLeft = Offset(
-            x = (size.width - sizeArc.width) / 2f,
-            y = (size.height - sizeArc.height) / 2f
-        ),
+        topLeft = calculateTheCenterOffsetForTheThetaArc(arcSize = arcSize),
 
-        size = sizeArc,
+        size = arcSize,
 
         style = Stroke(width = 2.dp.toPx())
     )
@@ -232,6 +230,13 @@ private fun calculateThetaAnglesForCircleQuarters(touchedAngleIndDegrees: Float)
     }
     return theta
 }
+
+private fun DrawScope.calculateTheCenterOffsetForTheThetaArc(arcSize: Size): Offset =
+    Offset(
+        x = (size.width - arcSize.width) / 2f,
+        y = (size.height - arcSize.height) / 2f
+    )
+
 
 @Preview
 @Composable
