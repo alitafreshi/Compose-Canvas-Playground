@@ -1,6 +1,7 @@
 package com.tafreshiali.composecanvasplayground.utils
 
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.text.TextLayoutResult
 import kotlin.math.PI
 import kotlin.math.atan2
 
@@ -34,4 +35,17 @@ fun detectQuarterBasedOnAngleInDegrees(angleInDegrees: Int): Int {
         in 180..269 -> 3
         else -> 4
     }
+}
+
+fun TextLayoutResult.calculateVerticalCenterOfAText(): Float {
+    // Calculate the line indices of the first and last lines of the text
+    val firstLineIndex = 0
+    val lastLineIndex = lineCount - 1
+
+    // Calculate the top and bottom y coordinates of the first and last lines
+    val firstLineTop = getLineTop(lineIndex = firstLineIndex)
+    val lastLineBottom = getLineBottom(lineIndex = lastLineIndex)
+
+    // Calculate the vertical center of the text based on the first and last lines
+    return (firstLineTop + lastLineBottom) / 2f
 }
