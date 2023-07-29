@@ -49,3 +49,20 @@ fun TextLayoutResult.calculateVerticalCenterOfAText(): Float {
     // Calculate the vertical center of the text based on the first and last lines
     return (firstLineTop + lastLineBottom) / 2f
 }
+
+fun TextLayoutResult.calculateHorizontalCenterOfAText(): Float {
+    // Calculate the line indices of the first and last lines of the text
+    val firstLineIndex = 0
+    val lastLineIndex = lineCount - 1
+
+    // Calculate the leftmost and rightmost x coordinates of the first line
+    val firstLineLeft = getLineLeft(firstLineIndex)
+    val firstLineRight = getLineRight(firstLineIndex)
+
+    // Calculate the leftmost and rightmost x coordinates of the last line
+    val lastLineLeft = getLineLeft(lastLineIndex)
+    val lastLineRight = getLineRight(lastLineIndex)
+
+    // Calculate the horizontal center of the text based on the first and last lines
+    return (firstLineLeft + firstLineRight + lastLineLeft + lastLineRight) / 4f
+}

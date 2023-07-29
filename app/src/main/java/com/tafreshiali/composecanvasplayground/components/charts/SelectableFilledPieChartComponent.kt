@@ -89,7 +89,15 @@ fun SelectableFilledPieChartComponent(
                     pieItem = pieItem,
                     startAngle = currentStartAngle,
                     sweepAngle = -angleToDraw,
-                    arcSize = Size(width = pieChartItemsDiameter, height = pieChartItemsDiameter)
+                    arcSize = Size(width = pieChartItemsDiameter, height = pieChartItemsDiameter),
+                    percentage = titleTextMeasurer.measure(
+                        AnnotatedString(pieItem.title),
+                        constraints = Constraints.fixed(
+                            width = (pieChartItemsRadius / 2f).toInt(),
+                            height = (pieChartItemsRadius / 2f).toInt()
+                        ),
+                        style = TextStyle(fontSize = 15.sp, textAlign = TextAlign.Center)
+                    )
                 )
                 currentStartAngle -= angleToDraw
             }
@@ -107,7 +115,8 @@ private fun DrawScope.pieItem(
     pieItem: PieItem,
     startAngle: Float,
     sweepAngle: Float,
-    arcSize: Size
+    arcSize: Size,
+    percentage: TextLayoutResult
 ) {
     drawArc(
         color = pieItem.color,
@@ -116,6 +125,14 @@ private fun DrawScope.pieItem(
         topLeft = calculateTheCenterOffsetForTheThetaArc(arcSize),
         size = arcSize,
         useCenter = true
+    )
+
+    val centerAngle = sweepAngle - startAngle / 2f
+
+    drawText(
+        textLayoutResult = percentage,
+        color = Color.White,
+        topLeft = Offset(x =, y =)
     )
 }
 
