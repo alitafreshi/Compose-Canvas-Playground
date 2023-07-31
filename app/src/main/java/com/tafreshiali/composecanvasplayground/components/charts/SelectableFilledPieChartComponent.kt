@@ -1,7 +1,6 @@
 package com.tafreshiali.composecanvasplayground.components.charts
 
 import android.graphics.Color.GRAY
-import android.graphics.Color.toArgb
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -14,7 +13,6 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
@@ -31,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tafreshiali.composecanvasplayground.ui.theme.White
 import com.tafreshiali.composecanvasplayground.utils.Constance.COMPLETE_CIRCLE_DEGREE
+import com.tafreshiali.composecanvasplayground.utils.calculateAnOffsetOnCircle
 import com.tafreshiali.composecanvasplayground.utils.calculateVerticalCenterOfAText
 
 @ExperimentalTextApi
@@ -58,7 +57,6 @@ fun SelectableFilledPieChartComponent(
     var currentStartAngle by remember {
         mutableStateOf(0f)
     }
-
 
     BoxWithConstraints(modifier = modifier.drawWithCache {
 
@@ -111,6 +109,7 @@ fun SelectableFilledPieChartComponent(
     }, content = {})
 }
 
+@OptIn(ExperimentalTextApi::class)
 private fun DrawScope.pieItem(
     pieItem: PieItem,
     startAngle: Float,
@@ -127,12 +126,30 @@ private fun DrawScope.pieItem(
         useCenter = true
     )
 
-    val centerAngle = sweepAngle - startAngle / 2f
 
-    drawText(
+    val centerAngle = (startAngle - sweepAngle) / 2f
+
+    // Calculate the offset for positioning the text at the center of the arc
+
+    val rotateAngle = -(startAngle + sweepAngle / 2f + 180f)
+
+    /*drawText(
         textLayoutResult = percentage,
         color = Color.White,
-        topLeft = Offset(x =, y =)
+        topLeft = Offset(
+            x = center.x,
+            y = center.y + (size.minDimension / 3f - (size.minDimension / 3f - size.minDimension / 4.8f) / 2f)
+        ),
+
+        )*/
+
+    drawCircle(
+        color = pieItem.color,
+        radius = 15f,
+        center = center.calculateAnOffsetOnCircle(
+            radius = size.minDimension / 2.9f,
+            thetaDegrees = centerAngle.toInt()
+        )
     )
 }
 

@@ -4,6 +4,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.TextLayoutResult
 import kotlin.math.PI
 import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 fun Float.convertFromRadiansToDegrees(): Float = this * (180f / PI).toFloat()
 
@@ -65,4 +67,13 @@ fun TextLayoutResult.calculateHorizontalCenterOfAText(): Float {
 
     // Calculate the horizontal center of the text based on the first and last lines
     return (firstLineLeft + firstLineRight + lastLineLeft + lastLineRight) / 4f
+}
+
+
+fun Offset.calculateAnOffsetOnCircle(radius: Float, thetaDegrees: Int): Offset {
+    val thetaLimited = thetaDegrees % 360.0
+    val thetaRadians = Math.toRadians(thetaLimited)
+    val x = x + radius * cos(thetaRadians)
+    val y = y + radius * sin(thetaRadians)
+    return Offset(x.toFloat(), y.toFloat())
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tafreshiali.composecanvasplayground.components.BasicDraggableComponent
 import com.tafreshiali.composecanvasplayground.components.DraggableCircularSliderComponent
+import com.tafreshiali.composecanvasplayground.components.charts.PieItem
 import com.tafreshiali.composecanvasplayground.components.charts.SelectableFilledPieChartComponent
 import com.tafreshiali.composecanvasplayground.components.charts.pieChartInformation
 import com.tafreshiali.composecanvasplayground.ui.theme.ComposeCanvasPlaygroundTheme
@@ -41,7 +42,13 @@ class MainActivity : ComponentActivity() {
 
                     SelectableFilledPieChartComponent(
                         modifier = Modifier.size(350.dp),
-                        pieInformationList = pieChartInformation()
+                        pieInformationList =  listOf(
+                            PieItem(title = "Go Shopping", percentage = 50, color = Color.Red),
+                            PieItem(title = "Go To The Cinema", percentage = 10, color = Color.Yellow),
+                            PieItem(title = "By A Car", percentage = 20, color = Color.Green),
+                            PieItem(title = "Vacation", percentage = 10, color = Color.Blue),
+                            PieItem(title = "Coffee", percentage = 10, color = Color.Cyan)
+                        )
                     )
 
                     //BasicDraggableComponent()
