@@ -69,7 +69,6 @@ fun TextLayoutResult.calculateHorizontalCenterOfAText(): Float {
     return (firstLineLeft + firstLineRight + lastLineLeft + lastLineRight) / 4f
 }
 
-
 fun Offset.calculateAnOffsetOnCircle(radius: Float, thetaDegrees: Int): Offset {
     val thetaLimited = thetaDegrees % 360.0
     val thetaRadians = Math.toRadians(thetaLimited)
@@ -77,3 +76,5 @@ fun Offset.calculateAnOffsetOnCircle(radius: Float, thetaDegrees: Int): Offset {
     val y = y + radius * sin(thetaRadians)
     return Offset(x.toFloat(), y.toFloat())
 }
+
+fun findCenterAngle(startAngle: Float, sweepAngle: Float): Float = startAngle + (sweepAngle / 2)

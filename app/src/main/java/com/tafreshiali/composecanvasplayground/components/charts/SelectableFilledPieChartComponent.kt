@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
@@ -30,7 +29,9 @@ import androidx.compose.ui.unit.sp
 import com.tafreshiali.composecanvasplayground.ui.theme.White
 import com.tafreshiali.composecanvasplayground.utils.Constance.COMPLETE_CIRCLE_DEGREE
 import com.tafreshiali.composecanvasplayground.utils.calculateAnOffsetOnCircle
+import com.tafreshiali.composecanvasplayground.utils.calculateHorizontalCenterOfAText
 import com.tafreshiali.composecanvasplayground.utils.calculateVerticalCenterOfAText
+import com.tafreshiali.composecanvasplayground.utils.findCenterAngle
 
 @ExperimentalTextApi
 @Composable
@@ -54,9 +55,7 @@ fun SelectableFilledPieChartComponent(
         mutableStateOf(COMPLETE_CIRCLE_DEGREE / totalPieItemsPercentageValue.value)
     }
 
-    var currentStartAngle by remember {
-        mutableStateOf(0f)
-    }
+    var currentStartAngle = 0f
 
     BoxWithConstraints(modifier = modifier.drawWithCache {
 
@@ -81,21 +80,23 @@ fun SelectableFilledPieChartComponent(
         )
 
         onDrawBehind {
-            pieItemList.forEach { pieItem ->
+            pieItemList.forEachIndexed { index, pieItem ->
                 val angleToDraw = pieItem.percentage * anglePerValue.value
+
                 pieItem(
                     pieItem = pieItem,
                     startAngle = currentStartAngle,
                     sweepAngle = -angleToDraw,
                     arcSize = Size(width = pieChartItemsDiameter, height = pieChartItemsDiameter),
                     percentage = titleTextMeasurer.measure(
-                        AnnotatedString(pieItem.title),
+                        AnnotatedString(pieItem.percentage.toString()),
                         constraints = Constraints.fixed(
                             width = (pieChartItemsRadius / 2f).toInt(),
                             height = (pieChartItemsRadius / 2f).toInt()
                         ),
                         style = TextStyle(fontSize = 15.sp, textAlign = TextAlign.Center)
-                    )
+                    ),
+                    hypotheticalRadius = (pieChartItemsRadius + pieTitleOuterCircleRadius) / 2f
                 )
                 currentStartAngle -= angleToDraw
             }
@@ -115,7 +116,8 @@ private fun DrawScope.pieItem(
     startAngle: Float,
     sweepAngle: Float,
     arcSize: Size,
-    percentage: TextLayoutResult
+    percentage: TextLayoutResult,
+    hypotheticalRadius: Float
 ) {
     drawArc(
         color = pieItem.color,
@@ -126,30 +128,19 @@ private fun DrawScope.pieItem(
         useCenter = true
     )
 
+    val pointsOffset = center.calculateAnOffsetOnCircle(
+        radius = hypotheticalRadius,
+        thetaDegrees = findCenterAngle(startAngle, sweepAngle).toInt()
+    )
 
-    val centerAngle = (startAngle - sweepAngle) / 2f
-
-    // Calculate the offset for positioning the text at the center of the arc
-
-    val rotateAngle = -(startAngle + sweepAngle / 2f + 180f)
-
-    /*drawText(
+    drawText(
         textLayoutResult = percentage,
-        color = Color.White,
+        color = Color.Black,
         topLeft = Offset(
-            x = center.x,
-            y = center.y + (size.minDimension / 3f - (size.minDimension / 3f - size.minDimension / 4.8f) / 2f)
-        ),
-
-        )*/
-
-    drawCircle(
-        color = pieItem.color,
-        radius = 15f,
-        center = center.calculateAnOffsetOnCircle(
-            radius = size.minDimension / 2.9f,
-            thetaDegrees = centerAngle.toInt()
+            x = pointsOffset.x - percentage.calculateHorizontalCenterOfAText(),
+            y = pointsOffset.y - percentage.calculateVerticalCenterOfAText()
         )
+
     )
 }
 

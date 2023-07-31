@@ -8,15 +8,6 @@ data class PieItem(
     val color: Color
 )
 
-/*
-fun pieChartInformation(): List<PieItem> = buildList {
-    add(PieItem(title = "Go Shopping", percentage = 50, color = Color.Red))
-    add(PieItem(title = "Go To The Cinema", percentage = 10, color = Color.Yellow))
-    add(PieItem(title = "By A Car", percentage = 20, color = Color.Green))
-    add(PieItem(title = "Vacation", percentage = 10, color = Color.Blue))
-    add(PieItem(title = "Coffee", percentage = 10, color = Color.Cyan))
-}*/
-
 fun pieChartInformation(): List<PieItem> = listOf(
     PieItem(title = "Go Shopping", percentage = 50, color = Color.Red),
     PieItem(title = "Go To The Cinema", percentage = 10, color = Color.Yellow),
