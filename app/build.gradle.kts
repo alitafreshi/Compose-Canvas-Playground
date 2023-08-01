@@ -1,6 +1,7 @@
 plugins {
     id(Plugins.androidApplication)
     kotlin(KotlinPlugins.android)
+    id(Plugins.safeArgsNavigationPlugin)
 }
 
 android {
@@ -89,4 +90,8 @@ dependencies {
     implementation(Compose.compose_view_binding)
     debugImplementation(Compose.compose_ui_manifest)
     debugImplementation(Compose.compose_ui_tooling)
+
+    //JETPACK-NAVIGATION
+    implementation(Navigation.navigation_fragments)
+    implementation(Navigation.navigation_kotlin_ui)
 }

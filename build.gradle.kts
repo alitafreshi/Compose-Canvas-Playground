@@ -15,6 +15,7 @@ buildscript {
     dependencies {
         classpath(Build.buildTools)
         classpath(Build.kotlinGradlePlugin)
+        classpath(Navigation.navigation_gradle_safe_args)
     }
 }
 
