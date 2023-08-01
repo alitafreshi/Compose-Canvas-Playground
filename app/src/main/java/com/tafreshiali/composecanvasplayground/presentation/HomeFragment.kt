@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,8 +29,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.view.KeyEventDispatcher
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 
 class HomeFragment : Fragment() {
 
@@ -41,20 +41,34 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View = ComposeView(context = requireContext()).apply {
         setContent {
-            HomeScreen()
+            HomeScreen(onComponentClicked = { component ->
+                findNavController().navigate(component.direction)
+            })
         }
     }
 }
 
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onComponentClicked: (Component) -> Unit) {
     val componentsList by remember {
         mutableStateOf(
             listOf(
-                Component(id = 0, name = "BasicDraggableComponent"),
-                Component(id = 1, name = "DraggableCircularSliderComponent"),
-                Component(id = 2, name = "SelectableFilledPieChartComponent")
+                Component(
+                    id = 0,
+                    name = "BasicDraggableComponent",
+                    direction = HomeFragmentDirections.actionHomeFragmentToBasicDraggableComponentFragment()
+                ),
+                Component(
+                    id = 1,
+                    name = "DraggableCircularSliderComponent",
+                    direction = HomeFragmentDirections.actionHomeFragmentToDraggableCircularSliderComponentFragment()
+                ),
+                Component(
+                    id = 2,
+                    name = "SelectableFilledPieChartComponent",
+                    direction = HomeFragmentDirections.actionHomeFragmentToSelectableFilledPieChartComponentFragment()
+                )
             )
         )
     }
@@ -65,9 +79,7 @@ fun HomeScreen() {
         verticalArrangement = Arrangement.spacedBy(15.dp),
         contentPadding = PaddingValues(20.dp)
     ) {
-        items(items = componentsList, key = { component ->
-            component.id
-        }) { component ->
+        items(items = componentsList, key = { component -> component.id }) { component ->
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -76,6 +88,7 @@ fun HomeScreen() {
                         color = Color.Black,
                         shape = MaterialTheme.shapes.small
                     )
+                    .clickable(onClick = { onComponentClicked(component) })
                     .padding(15.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -96,7 +109,7 @@ fun HomeScreen() {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen() {}
 }
 
-private data class Component(val id: Int, val name: String)
+data class Component(val id: Int, val name: String, val direction: NavDirections)
