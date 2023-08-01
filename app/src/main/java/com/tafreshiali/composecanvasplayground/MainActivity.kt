@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     SelectableFilledPieChartComponent(
-                        modifier = Modifier.size(350.dp),
+                        modifier = Modifier.size(450.dp),
                         pieInformationList =  pieChartInformation()
                     )
 

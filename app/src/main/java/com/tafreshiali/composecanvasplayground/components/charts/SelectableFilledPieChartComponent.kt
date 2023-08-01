@@ -13,6 +13,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.AnnotatedString
@@ -89,14 +90,22 @@ fun SelectableFilledPieChartComponent(
                     sweepAngle = -angleToDraw,
                     arcSize = Size(width = pieChartItemsDiameter, height = pieChartItemsDiameter),
                     percentage = titleTextMeasurer.measure(
-                        AnnotatedString(pieItem.percentage.toString()),
+                        AnnotatedString("${pieItem.percentage} %"),
                         constraints = Constraints.fixed(
                             width = (pieChartItemsRadius / 2f).toInt(),
                             height = (pieChartItemsRadius / 2f).toInt()
                         ),
                         style = TextStyle(fontSize = 15.sp, textAlign = TextAlign.Center)
                     ),
-                    hypotheticalRadius = (pieChartItemsRadius + pieTitleOuterCircleRadius) / 2f
+                    hypotheticalRadius = (pieChartItemsRadius + pieTitleOuterCircleRadius) / 2f,
+                    pieTitle = titleTextMeasurer.measure(
+                        AnnotatedString(pieItem.title),
+                        constraints = Constraints.fixed(
+                            width = (pieChartItemsRadius / 2f).toInt(),
+                            height = (pieChartItemsRadius).toInt()
+                        ),
+                        style = TextStyle(fontSize = 15.sp, textAlign = TextAlign.Center)
+                    )
                 )
                 currentStartAngle -= angleToDraw
             }
@@ -117,31 +126,48 @@ private fun DrawScope.pieItem(
     sweepAngle: Float,
     arcSize: Size,
     percentage: TextLayoutResult,
-    hypotheticalRadius: Float
+    hypotheticalRadius: Float,
+    pieTitle: TextLayoutResult,
+    pieItemsGap: Float = 1.5f
 ) {
     drawArc(
         color = pieItem.color,
         startAngle = startAngle,
-        sweepAngle = sweepAngle,
+        sweepAngle = sweepAngle + pieItemsGap,
         topLeft = calculateTheCenterOffsetForTheThetaArc(arcSize),
         size = arcSize,
         useCenter = true
     )
 
-    val pointsOffset = center.calculateAnOffsetOnCircle(
+    val pointsOffsetOnInnerHypotheticalCircle = center.calculateAnOffsetOnCircle(
         radius = hypotheticalRadius,
-        thetaDegrees = findCenterAngle(startAngle, sweepAngle).toInt()
+        thetaDegrees = findCenterAngle(startAngle, sweepAngle + pieItemsGap).toInt()
     )
 
     drawText(
         textLayoutResult = percentage,
         color = Color.Black,
         topLeft = Offset(
-            x = pointsOffset.x - percentage.calculateHorizontalCenterOfAText(),
-            y = pointsOffset.y - percentage.calculateVerticalCenterOfAText()
+            x = pointsOffsetOnInnerHypotheticalCircle.x - percentage.calculateHorizontalCenterOfAText(),
+            y = pointsOffsetOnInnerHypotheticalCircle.y - percentage.calculateVerticalCenterOfAText()
         )
-
     )
+
+    val pointsOffsetOnOuterHypotheticalCircle = center.calculateAnOffsetOnCircle(
+        radius = size.minDimension / 2.5f,
+        thetaDegrees = findCenterAngle(startAngle, sweepAngle).toInt()
+    )
+
+    drawText(
+        textLayoutResult = pieTitle,
+        color = Color.White,
+        topLeft = Offset(
+            x = pointsOffsetOnOuterHypotheticalCircle.x - pieTitle.calculateHorizontalCenterOfAText(),
+            y = pointsOffsetOnOuterHypotheticalCircle.y - pieTitle.calculateVerticalCenterOfAText()
+        )
+    )
+
+
 }
 
 private fun DrawScope.calculateTheCenterOffsetForTheThetaArc(arcSize: Size): Offset =
@@ -190,7 +216,7 @@ private fun DrawScope.pieChartTitleContainer(
 @Composable
 fun SelectableFilledPieChartComponentPreview() {
     SelectableFilledPieChartComponent(
-        modifier = Modifier.size(350.dp),
+        modifier = Modifier.size(450.dp),
         pieInformationList = pieChartInformation()
     )
 }
