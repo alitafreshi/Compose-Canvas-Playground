@@ -15,14 +15,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tafreshiali.composecanvasplayground.components.BasicDraggableComponent
 import com.tafreshiali.composecanvasplayground.components.DraggableCircularSliderComponent
+import com.tafreshiali.composecanvasplayground.components.charts.PieItem
+import com.tafreshiali.composecanvasplayground.components.charts.SelectableFilledPieChartComponent
+import com.tafreshiali.composecanvasplayground.components.charts.pieChartInformation
 import com.tafreshiali.composecanvasplayground.ui.theme.ComposeCanvasPlaygroundTheme
 import com.tafreshiali.composecanvasplayground.ui.theme.Pink40
 import com.tafreshiali.composecanvasplayground.ui.theme.Purple40
 
+@ExperimentalTextApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +39,13 @@ class MainActivity : ComponentActivity() {
                         .background(Color.DarkGray),
                     contentAlignment = Alignment.Center
                 ) {
-                    BasicDraggableComponent()
+
+                    SelectableFilledPieChartComponent(
+                        modifier = Modifier.size(450.dp),
+                        pieInformationList =  pieChartInformation()
+                    )
+
+                    //BasicDraggableComponent()
 
                 /*    DraggableCircularSliderComponent(
                         modifier = Modifier
