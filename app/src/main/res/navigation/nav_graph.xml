@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_homeFragment_to_selectableFilledPieChartComponentFragment"
             app:destination="@id/selectableFilledPieChartComponentFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_tripCalculatorComponentFragment"
+            app:destination="@id/tripCalculatorComponentFragment" />
     </fragment>
 
     <fragment
@@ -33,5 +36,9 @@
         android:id="@+id/selectableFilledPieChartComponentFragment"
         android:name="com.tafreshiali.composecanvasplayground.presentation.SelectableFilledPieChartComponentFragment"
         android:label="SelectableFilledPieChartComponentFragment" />
+    <fragment
+        android:id="@+id/tripCalculatorComponentFragment"
+        android:name="com.tafreshiali.composecanvasplayground.presentation.TripCalculatorComponentFragment"
+        android:label="TripCalculatorComponentFragment" />
 
 </navigation>

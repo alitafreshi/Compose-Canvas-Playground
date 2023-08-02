@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -86,21 +87,31 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
                     val angleToDraw = divideCircleAnglesInToParts(
                         index = number,
                         divideCount = numbersList.toList().size.toFloat()
-                    )
+                    ) - anglePerValue.value
+
 
                     val pointsOffsetOnNumbersCircle = center.calculateAnOffsetOnCircle(
                         radius = numbersCircleRadius,
-                        thetaDegrees = (if (number == 1) 0 else (angleToDraw - anglePerValue.value).toInt()) + startAngle
+                        thetaDegrees = ((if (number == 1) 0 else angleToDraw).toInt()) + startAngle
                     )
 
-                    drawText(
-                        textLayoutResult = measuredNumber,
-                        color = Color.Black,
-                        topLeft = Offset(
-                            x = pointsOffsetOnNumbersCircle.x - measuredNumber.calculateHorizontalCenterOfAText(),
-                            y = pointsOffsetOnNumbersCircle.y - measuredNumber.calculateVerticalCenterOfAText()
+                    rotate(
+                        degrees = angleToDraw, pivot = Offset(
+                            x =  pointsOffsetOnNumbersCircle.x,
+                            y = pointsOffsetOnNumbersCircle.y
                         )
-                    )
+                    ) {
+
+                        drawText(
+                            textLayoutResult = measuredNumber,
+                            color = Color.Black,
+                            topLeft = Offset(
+                                x = pointsOffsetOnNumbersCircle.x - measuredNumber.calculateHorizontalCenterOfAText(),
+                                y = pointsOffsetOnNumbersCircle.y - measuredNumber.calculateVerticalCenterOfAText()
+                            )
+                        )
+                    }
+
                 }
             }
         }, contentAlignment = Alignment.Center, content = {})

@@ -68,6 +68,11 @@ fun HomeScreen(onComponentClicked: (Component) -> Unit) {
                     id = 2,
                     name = "SelectableFilledPieChartComponent",
                     direction = HomeFragmentDirections.actionHomeFragmentToSelectableFilledPieChartComponentFragment()
+                ),
+                Component(
+                    id = 3,
+                    name = "TripCalculatorComponent",
+                    direction = HomeFragmentDirections.actionHomeFragmentToTripCalculatorComponentFragment()
                 )
             )
         )
