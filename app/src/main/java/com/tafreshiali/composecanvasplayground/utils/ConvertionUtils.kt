@@ -78,3 +78,9 @@ fun Offset.calculateAnOffsetOnCircle(radius: Float, thetaDegrees: Int): Offset {
 }
 
 fun findCenterAngle(startAngle: Float, sweepAngle: Float): Float = startAngle + (sweepAngle / 2)
+
+fun divideCircleAnglesInToParts(index: Int, divideCount: Float): Float =
+    index * calculateAnglePerValue(divideCount = divideCount)
+
+fun calculateAnglePerValue(divideCount: Float): Float =
+    Constance.COMPLETE_CIRCLE_DEGREE / divideCount
