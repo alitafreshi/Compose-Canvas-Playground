@@ -6,6 +6,7 @@ import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 fun Float.convertFromRadiansToDegrees(): Float = this * (180f / PI).toFloat()
 
@@ -84,3 +85,10 @@ fun divideCircleAnglesInToParts(index: Int, divideCount: Float): Float =
 
 fun calculateAnglePerValue(divideCount: Float): Float =
     Constance.COMPLETE_CIRCLE_DEGREE / divideCount
+
+// Function to calculate the distance between two points
+fun Offset.calculateDistanceFrom(offset: Offset): Float {
+    val dx = this.x - offset.x
+    val dy = this.y - offset.y
+    return sqrt(dx * dx + dy * dy)
+}
