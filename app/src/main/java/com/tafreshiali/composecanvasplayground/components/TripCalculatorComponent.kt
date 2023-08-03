@@ -147,23 +147,33 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
 
 private fun DrawScope.staticComponents(
     outerCircleRadius: Float,
-    imaginaryInnerCircleRadius: Float
+    imaginaryInnerCircleRadius: Float,
 ) {
 
     //Center Point
-    drawCircle(color = Color.Black, radius = 15f)
+    drawCircle(color = Color.Black, radius = outerCircleRadius / 25f)
 
     //Outer Circle
     drawCircle(color = Color.Black, radius = outerCircleRadius, style = Stroke(width = 5f))
 
-    //
+    //Pointer Circle
     drawCircle(
         color = Color.Green,
-        radius = 20f,
+        radius = outerCircleRadius / 15f,
         center = Offset(
             x = center.x - (outerCircleRadius - imaginaryInnerCircleRadius),
             y = center.y
         )
+    )
+
+    drawCircle(
+        color = Color.Black,
+        radius = outerCircleRadius / 15f,
+        center = Offset(
+            x = center.x - (outerCircleRadius - imaginaryInnerCircleRadius),
+            y = center.y
+        ),
+        style = Stroke(width = 3f)
     )
 }
 
@@ -208,7 +218,7 @@ private fun DrawScope.draggableNumbersCircle(
 }
 
 @ExperimentalTextApi
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFF)
 @Composable
 fun TripCalculatorComponentPreview() {
     TripCalculatorComponent(numbers = 1..25)
