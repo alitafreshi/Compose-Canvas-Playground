@@ -1,6 +1,8 @@
 package com.tafreshiali.composecanvasplayground.utils
 
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.TextLayoutResult
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -92,3 +94,9 @@ fun Offset.calculateDistanceFrom(offset: Offset): Float {
     val dy = this.y - offset.y
     return sqrt(dx * dx + dy * dy)
 }
+
+fun DrawScope.calculateTheCenterOffsetForTheThetaArc(arcSize: Size): Offset =
+    Offset(
+        x = (size.width - arcSize.width) / 2f,
+        y = (size.height - arcSize.height) / 2f
+    )

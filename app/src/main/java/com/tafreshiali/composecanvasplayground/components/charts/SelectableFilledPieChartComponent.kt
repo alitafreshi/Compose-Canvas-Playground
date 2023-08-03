@@ -12,11 +12,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.AnnotatedString
@@ -34,6 +30,7 @@ import com.tafreshiali.composecanvasplayground.ui.theme.White
 import com.tafreshiali.composecanvasplayground.utils.Constance.COMPLETE_CIRCLE_DEGREE
 import com.tafreshiali.composecanvasplayground.utils.calculateAnOffsetOnCircle
 import com.tafreshiali.composecanvasplayground.utils.calculateHorizontalCenterOfAText
+import com.tafreshiali.composecanvasplayground.utils.calculateTheCenterOffsetForTheThetaArc
 import com.tafreshiali.composecanvasplayground.utils.calculateVerticalCenterOfAText
 import com.tafreshiali.composecanvasplayground.utils.findCenterAngle
 
@@ -170,16 +167,7 @@ private fun DrawScope.pieItem(
             y = pointsOffsetOnOuterHypotheticalCircle.y - pieTitle.calculateVerticalCenterOfAText()
         )
     )
-
-
 }
-
-private fun DrawScope.calculateTheCenterOffsetForTheThetaArc(arcSize: Size): Offset =
-    Offset(
-        x = (size.width - arcSize.width) / 2f,
-        y = (size.height - arcSize.height) / 2f
-    )
-
 
 @ExperimentalTextApi
 private fun DrawScope.pieChartTitleContainer(

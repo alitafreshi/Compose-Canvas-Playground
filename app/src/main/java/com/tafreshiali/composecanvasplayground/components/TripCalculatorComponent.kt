@@ -12,8 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
@@ -33,6 +35,7 @@ import com.tafreshiali.composecanvasplayground.utils.calculateAnOffsetOnCircle
 import com.tafreshiali.composecanvasplayground.utils.calculateAnglePerValue
 import com.tafreshiali.composecanvasplayground.utils.calculateDistanceFrom
 import com.tafreshiali.composecanvasplayground.utils.calculateHorizontalCenterOfAText
+import com.tafreshiali.composecanvasplayground.utils.calculateTheCenterOffsetForTheThetaArc
 import com.tafreshiali.composecanvasplayground.utils.calculateVerticalCenterOfAText
 import com.tafreshiali.composecanvasplayground.utils.convertFromOffsetToDegrees
 import com.tafreshiali.composecanvasplayground.utils.divideCircleAnglesInToParts
@@ -111,8 +114,11 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
         .drawWithCache {
             canvasCenter = size.center
             val outerCircleRadius = size.minDimension / 2.5f
-            val imaginaryInnerCircleRadius = outerCircleRadius / 2.9f
+            val imaginaryInnerCircleRadius = outerCircleRadius / 2.7f
             val numbersCircleRadius = outerCircleRadius / 1.16f
+            val animatedCircleDiameter =
+                ((numbersCircleRadius - imaginaryInnerCircleRadius) / 2f) + canvasCenter.x
+
 
             onDrawBehind {
                 staticComponents(
@@ -139,6 +145,13 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
                         startAngle = startAngle,
                         anglePerValue = anglePerValue.value,
                         draggedAngleInDegree = draggedAngle
+                    )
+
+                    animatedCircular(
+                        animatedCircleSize = Size(
+                            width = animatedCircleDiameter,
+                            height = animatedCircleDiameter
+                        )
                     )
                 }
             }
@@ -216,6 +229,19 @@ private fun DrawScope.draggableNumbersCircle(
         }
     }
 }
+
+private fun DrawScope.animatedCircular(animatedCircleSize: Size) {
+    drawArc(
+        color = Color.Black,
+        startAngle = -90f,
+        sweepAngle = 300f,
+        useCenter = false,
+        topLeft = calculateTheCenterOffsetForTheThetaArc(animatedCircleSize),
+        size = animatedCircleSize,
+        style = Stroke(width = 5f, cap = StrokeCap.Round)
+    )
+}
+
 
 @ExperimentalTextApi
 @Preview(showBackground = true, backgroundColor = 0xFFFF)
