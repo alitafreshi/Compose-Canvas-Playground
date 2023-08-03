@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -44,61 +45,77 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
 
     val numberTextMeasurer = rememberTextMeasurer()
 
-    val numbersList by remember {
-        mutableStateOf(numbers)
-    }
+    val numbersList by remember { mutableStateOf(numbers) }
 
     val anglePerValue = remember {
         mutableStateOf(calculateAnglePerValue(divideCount = numbers.toList().size.toFloat()))
     }
 
-    var canvasCenter by remember {
-        mutableStateOf(Offset.Zero)
-    }
+    var canvasCenter by remember { mutableStateOf(Offset.Zero) }
 
-    var draggedAngle by remember {
-        mutableStateOf(0f)
-    }
+    var draggedDistance by remember { mutableStateOf(0f) }
 
+    var dragStartedAngle by remember { mutableStateOf(0f) }
 
+    var draggedAngle by remember { mutableStateOf(0f) }
 
+    var oldDraggedAngle by remember { mutableStateOf(0f) }
 
     BoxWithConstraints(modifier = Modifier
         .size(450.dp)
         .pointerInput(true) {
             detectDragGestures(
-                onDragStart = { offset: Offset ->
-
+                onDragStart = { initialDraggedOffset: Offset ->
+                    dragStartedAngle =
+                        initialDraggedOffset
+                            .convertFromOffsetToDegrees(centerOffset = canvasCenter)
+                            .toFloat()
                 },
                 onDrag = { change, _ ->
-                    val draggedPoint = change.position
-                    // Calculate the distance between the dragged point and the center of the circle
-                    val distance = draggedPoint.calculateDistanceFrom(offset = canvasCenter)
+
+                    val draggedOffset = change.position
+                    // Calculate the distance between the dragged point and the center of the circle to make sure user dragged on correct circle
+                    draggedDistance = draggedOffset.calculateDistanceFrom(offset = canvasCenter)
+
+                    // Calculate the initial angle between the center of the circle and the dragged point
+                    val newDraggedAngle =
+                        draggedOffset
+                            .convertFromOffsetToDegrees(centerOffset = canvasCenter)
+                            .toFloat()
 
                     // Check if the dragged point is inside the circle
-                    if (distance <= (min(
+                    if (draggedDistance <= (min(
                             size.width.absoluteValue,
                             size.height.absoluteValue
-                        ) / 3f)
+                        ) / 2.5f)
                     ) {
-                        draggedAngle =
-                            draggedPoint
-                                .convertFromOffsetToDegrees(centerOffset = canvasCenter)
-                                .toFloat()
+                        // Calculate the changed angle during this drag event
+                        val deltaAngle = newDraggedAngle - dragStartedAngle
+
+                        // Calculate the changed angle during this drag event
+                        draggedAngle = (oldDraggedAngle - deltaAngle + 360) % 360
                     }
                 },
                 onDragEnd = {
-
+                    // Check if the dragged point is inside the circle
+                    if (draggedDistance <= (min(
+                            size.width.absoluteValue,
+                            size.height.absoluteValue
+                        ) / 2.5f)
+                    ) {
+                        // Update oldDraggedAngle for the next drag event
+                        oldDraggedAngle = draggedAngle
+                    }
                 })
         }
         .drawWithCache {
             canvasCenter = size.center
             val outerCircleRadius = size.minDimension / 2.5f
-            val imaginaryInnerCircleRadius = size.minDimension / 6f
-            val numbersCircleRadius = size.minDimension / 3f
+            val imaginaryInnerCircleRadius = outerCircleRadius / 2.9f
+            val numbersCircleRadius = outerCircleRadius / 1.16f
 
             onDrawBehind {
-                draggableCircle(
+                staticComponents(
                     outerCircleRadius = outerCircleRadius,
                     imaginaryInnerCircleRadius = imaginaryInnerCircleRadius
                 )
@@ -114,42 +131,24 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
                         style = TextStyle(fontSize = 15.sp, textAlign = TextAlign.Center)
                     )
 
-                    val angleToDraw = divideCircleAnglesInToParts(
-                        index = number,
-                        divideCount = numbersList.toList().size.toFloat()
-                    ) - anglePerValue.value
-
-
-                    val pointsOffsetOnNumbersCircle = center.calculateAnOffsetOnCircle(
-                        radius = numbersCircleRadius,
-                        thetaDegrees = ((if (number == 1) 0 else angleToDraw).toInt()) + startAngle
+                    draggableNumbersCircle(
+                        number = number,
+                        numberTitle = measuredNumber,
+                        numbersCount = numbersList.toList().size.toFloat(),
+                        numbersCircleRadius = numbersCircleRadius,
+                        startAngle = startAngle,
+                        anglePerValue = anglePerValue.value,
+                        draggedAngleInDegree = draggedAngle
                     )
-
-                    rotate(degrees = draggedAngle) {
-
-                        rotate(
-                            degrees = angleToDraw, pivot = Offset(
-                                x = pointsOffsetOnNumbersCircle.x,
-                                y = pointsOffsetOnNumbersCircle.y
-                            )
-                        ) {
-                            drawText(
-                                textLayoutResult = measuredNumber,
-                                color = Color.Black,
-                                topLeft = Offset(
-                                    x = pointsOffsetOnNumbersCircle.x - measuredNumber.calculateHorizontalCenterOfAText(),
-                                    y = pointsOffsetOnNumbersCircle.y - measuredNumber.calculateVerticalCenterOfAText()
-                                )
-                            )
-                        }
-                    }
-
                 }
             }
         }, contentAlignment = Alignment.Center, content = {})
 }
 
-private fun DrawScope.draggableCircle(outerCircleRadius: Float, imaginaryInnerCircleRadius: Float) {
+private fun DrawScope.staticComponents(
+    outerCircleRadius: Float,
+    imaginaryInnerCircleRadius: Float
+) {
 
     //Center Point
     drawCircle(color = Color.Black, radius = 15f)
@@ -166,6 +165,46 @@ private fun DrawScope.draggableCircle(outerCircleRadius: Float, imaginaryInnerCi
             y = center.y
         )
     )
+}
+
+@OptIn(ExperimentalTextApi::class)
+private fun DrawScope.draggableNumbersCircle(
+    number: Int,
+    numberTitle: TextLayoutResult,
+    numbersCount: Float,
+    numbersCircleRadius: Float,
+    startAngle: Int,
+    anglePerValue: Float,
+    draggedAngleInDegree: Float
+) {
+    val angleToDrawInDegree = divideCircleAnglesInToParts(
+        index = number,
+        divideCount = numbersCount
+    ) - anglePerValue
+
+
+    val pointsOffsetOnNumbersCircle = center.calculateAnOffsetOnCircle(
+        radius = numbersCircleRadius,
+        thetaDegrees = ((if (number == 1) 0 else angleToDrawInDegree).toInt()) + startAngle
+    )
+
+    rotate(degrees = draggedAngleInDegree) {
+        rotate(
+            degrees = angleToDrawInDegree, pivot = Offset(
+                x = pointsOffsetOnNumbersCircle.x,
+                y = pointsOffsetOnNumbersCircle.y
+            )
+        ) {
+            drawText(
+                textLayoutResult = numberTitle,
+                color = Color.Black,
+                topLeft = Offset(
+                    x = pointsOffsetOnNumbersCircle.x - numberTitle.calculateHorizontalCenterOfAText(),
+                    y = pointsOffsetOnNumbersCircle.y - numberTitle.calculateVerticalCenterOfAText()
+                )
+            )
+        }
+    }
 }
 
 @ExperimentalTextApi
