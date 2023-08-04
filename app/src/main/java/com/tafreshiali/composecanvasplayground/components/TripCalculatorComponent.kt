@@ -1,9 +1,19 @@
 package com.tafreshiali.composecanvasplayground.components
 
+import android.util.Log
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.repeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +54,10 @@ import kotlin.math.min
 
 @ExperimentalTextApi
 @Composable
-fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
+fun TripCalculatorComponent(
+    numbers: IntRange,
+    initAngle: Int = 180
+) {
 
     val numberTextMeasurer = rememberTextMeasurer()
 
@@ -56,6 +69,8 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
 
     var canvasCenter by remember { mutableStateOf(Offset.Zero) }
 
+    //Handling user Dragging
+
     var draggedDistance by remember { mutableStateOf(0f) }
 
     var dragStartedAngle by remember { mutableStateOf(0f) }
@@ -63,6 +78,40 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
     var draggedAngle by remember { mutableStateOf(0f) }
 
     var oldDraggedAngle by remember { mutableStateOf(0f) }
+
+    //animated Arc
+
+    var shouldLaunchTheAnimations by remember {
+        mutableStateOf(false)
+    }
+    val animatedStartAngle by animateFloatAsState(
+        targetValue = if (shouldLaunchTheAnimations) 270f else -90f,
+        animationSpec = tween(
+            durationMillis = 2000,
+            delayMillis = 100,
+            easing = LinearOutSlowInEasing
+        ),
+        finishedListener = {
+            shouldLaunchTheAnimations = false
+        }
+    )
+
+    val angle = remember {
+        Animatable(0f)
+    }
+
+    val animatedSweepAngle by animateFloatAsState(
+        targetValue = if (shouldLaunchTheAnimations) 360f else 0f,
+        animationSpec = tween(
+            durationMillis = 2000,
+            delayMillis = 30,
+            easing = LinearOutSlowInEasing
+        ), finishedListener = {
+            shouldLaunchTheAnimations = false
+        }
+    )
+
+
 
     BoxWithConstraints(modifier = Modifier
         .size(450.dp)
@@ -73,6 +122,7 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
                         initialDraggedOffset
                             .convertFromOffsetToDegrees(centerOffset = canvasCenter)
                             .toFloat()
+                    shouldLaunchTheAnimations = false
                 },
                 onDrag = { change, _ ->
 
@@ -100,6 +150,7 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
                     }
                 },
                 onDragEnd = {
+
                     // Check if the dragged point is inside the circle
                     if (draggedDistance <= (min(
                             size.width.absoluteValue,
@@ -108,6 +159,12 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
                     ) {
                         // Update oldDraggedAngle for the next drag event
                         oldDraggedAngle = draggedAngle
+                        shouldLaunchTheAnimations = true
+                        Log.d(
+                            "ANIMATED_ANGELS",
+                            "shouldLaunchTheAnimations is $shouldLaunchTheAnimations"
+                        )
+
                     }
                 })
         }
@@ -142,7 +199,7 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
                         numberTitle = measuredNumber,
                         numbersCount = numbersList.toList().size.toFloat(),
                         numbersCircleRadius = numbersCircleRadius,
-                        startAngle = startAngle,
+                        startAngle = initAngle,
                         anglePerValue = anglePerValue.value,
                         draggedAngleInDegree = draggedAngle
                     )
@@ -151,11 +208,17 @@ fun TripCalculatorComponent(numbers: IntRange, startAngle: Int = 180) {
                         animatedCircleSize = Size(
                             width = animatedCircleDiameter,
                             height = animatedCircleDiameter
-                        )
+                        ),
+                        startAngle = animatedStartAngle,
+                        sweepAngle = animatedSweepAngle
                     )
                 }
             }
-        }, contentAlignment = Alignment.Center, content = {})
+        }, contentAlignment = Alignment.Center, content = {
+            /*LaunchedEffect(key1 = shouldLaunchTheAnimations){
+                angle.animateTo()
+            }*/
+    })
 }
 
 private fun DrawScope.staticComponents(
@@ -230,11 +293,16 @@ private fun DrawScope.draggableNumbersCircle(
     }
 }
 
-private fun DrawScope.animatedCircular(animatedCircleSize: Size) {
+private fun DrawScope.animatedCircular(
+    animatedCircleSize: Size,
+    startAngle: Float,
+    sweepAngle: Float
+) {
+    Log.d("ANIMATED_ANGELS", "startAngle is $startAngle and the sweepAngle is $sweepAngle")
     drawArc(
         color = Color.Black,
-        startAngle = -90f,
-        sweepAngle = 300f,
+        startAngle = startAngle,
+        sweepAngle = sweepAngle,
         useCenter = false,
         topLeft = calculateTheCenterOffsetForTheThetaArc(animatedCircleSize),
         size = animatedCircleSize,
