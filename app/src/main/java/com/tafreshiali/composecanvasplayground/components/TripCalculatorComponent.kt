@@ -49,6 +49,9 @@ import com.tafreshiali.composecanvasplayground.utils.calculateTheCenterOffsetFor
 import com.tafreshiali.composecanvasplayground.utils.calculateVerticalCenterOfAText
 import com.tafreshiali.composecanvasplayground.utils.convertFromOffsetToDegrees
 import com.tafreshiali.composecanvasplayground.utils.divideCircleAnglesInToParts
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 import kotlin.math.min
 
@@ -84,7 +87,7 @@ fun TripCalculatorComponent(
     var shouldLaunchTheAnimations by remember {
         mutableStateOf(false)
     }
-    val animatedStartAngle by animateFloatAsState(
+    /*val animatedStartAngle by animateFloatAsState(
         targetValue = if (shouldLaunchTheAnimations) 270f else -90f,
         animationSpec = tween(
             durationMillis = 2000,
@@ -94,22 +97,16 @@ fun TripCalculatorComponent(
         finishedListener = {
             shouldLaunchTheAnimations = false
         }
-    )
+    )*/
 
-    val angle = remember {
-        Animatable(0f)
+    val animatedStartAngle = remember {
+        Animatable(-90f)
     }
 
-    val animatedSweepAngle by animateFloatAsState(
-        targetValue = if (shouldLaunchTheAnimations) 360f else 0f,
-        animationSpec = tween(
-            durationMillis = 2000,
-            delayMillis = 30,
-            easing = LinearOutSlowInEasing
-        ), finishedListener = {
-            shouldLaunchTheAnimations = false
-        }
-    )
+
+    val animatedSweepAngle = remember {
+        Animatable(0f)
+    }
 
 
 
@@ -209,15 +206,49 @@ fun TripCalculatorComponent(
                             width = animatedCircleDiameter,
                             height = animatedCircleDiameter
                         ),
-                        startAngle = animatedStartAngle,
-                        sweepAngle = animatedSweepAngle
+                        startAngle = animatedStartAngle.value,
+                        sweepAngle = animatedSweepAngle.value
                     )
                 }
             }
         }, contentAlignment = Alignment.Center, content = {
-            /*LaunchedEffect(key1 = shouldLaunchTheAnimations){
-                angle.animateTo()
-            }*/
+
+        LaunchedEffect(key1 = shouldLaunchTheAnimations) {
+            if (shouldLaunchTheAnimations) {
+                val anim1Result = async {
+                    animatedStartAngle.animateTo(targetValue = 270f,
+                        animationSpec = tween(
+                            durationMillis = 2000,
+                            delayMillis = 100,
+                            easing = LinearOutSlowInEasing
+                        ),
+                        block = {
+
+                        })
+                }
+
+                val anim2Result = async {
+                    animatedSweepAngle.animateTo(targetValue = 360f,
+                        animationSpec = tween(
+                            durationMillis = 2000,
+                            delayMillis = 50,
+                            easing = LinearOutSlowInEasing
+                        ),
+                        block = {
+
+                        })
+                }
+                awaitAll(anim1Result, anim2Result)
+
+                if (!anim1Result.isActive && !anim2Result.isActive) {
+                    animatedStartAngle.snapTo(-90f)
+                    animatedSweepAngle.snapTo(0f)
+                }
+            } else {
+                animatedStartAngle.snapTo(-90f)
+                animatedSweepAngle.snapTo(-0f)
+            }
+        }
     })
 }
 
