@@ -3,7 +3,6 @@ package com.tafreshiali.composecanvasplayground.components
 import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.repeatable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
@@ -197,34 +196,33 @@ fun TripCalculatorComponent(
             if (shouldLaunchTheAnimations) {
                 val anim1Result = async {
                     animatedStartAngle.animateTo(targetValue = 270f,
-                        animationSpec = repeatable(
-                            iterations = 2,
-                            animation = keyframes {
-                                durationMillis = 2000
-                                -90f at 0
-                                0f at 500
-                                90f at 1000
-                                180f at 1500
-                                270f at 2000
-                            }
-                        )
+                        animationSpec = keyframes {
+                            durationMillis = 4000
+                            -90f at 0
+                            0f at 500
+                            90f at 1000
+                            180f at 1500
+                            270f at 2000
+                            360f at 2500
+                            450f at 3000
+                            540f at 3500
+                            630f at 4000
+                        }
                     )
                 }
 
                 val anim2Result = async {
                     animatedSweepAngle.animateTo(
                         targetValue = 0f,
-                        animationSpec = repeatable(
-                            iterations = 2,
-                            animation = keyframes {
-                                durationMillis = 2000
-                                0.0f at 0
-                                30f at 150
-                                50f at 250
-                                90f at 500
-                                0f at 2000
-                            },
-                        )
+                        animationSpec = keyframes {
+                            durationMillis = 4000
+                            0.0f at 0
+                            30f at 150
+                            50f at 250
+                            90f at 500
+                            100f at 2000
+                            0f at 4000
+                        }
                     )
                 }
                 awaitAll(anim1Result, anim2Result)
