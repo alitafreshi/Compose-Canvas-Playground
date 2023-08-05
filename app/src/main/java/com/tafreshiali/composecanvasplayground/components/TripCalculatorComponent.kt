@@ -2,13 +2,8 @@ package com.tafreshiali.composecanvasplayground.components
 
 import android.util.Log
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.repeatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
@@ -51,7 +46,6 @@ import com.tafreshiali.composecanvasplayground.utils.convertFromOffsetToDegrees
 import com.tafreshiali.composecanvasplayground.utils.divideCircleAnglesInToParts
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 import kotlin.math.min
 
@@ -87,28 +81,14 @@ fun TripCalculatorComponent(
     var shouldLaunchTheAnimations by remember {
         mutableStateOf(false)
     }
-    /*val animatedStartAngle by animateFloatAsState(
-        targetValue = if (shouldLaunchTheAnimations) 270f else -90f,
-        animationSpec = tween(
-            durationMillis = 2000,
-            delayMillis = 100,
-            easing = LinearOutSlowInEasing
-        ),
-        finishedListener = {
-            shouldLaunchTheAnimations = false
-        }
-    )*/
 
     val animatedStartAngle = remember {
         Animatable(-90f)
     }
 
-
     val animatedSweepAngle = remember {
         Animatable(0f)
     }
-
-
 
     BoxWithConstraints(modifier = Modifier
         .size(450.dp)
@@ -217,36 +197,37 @@ fun TripCalculatorComponent(
             if (shouldLaunchTheAnimations) {
                 val anim1Result = async {
                     animatedStartAngle.animateTo(targetValue = 270f,
-                        animationSpec = tween(
-                            durationMillis = 2000,
-                            delayMillis = 100,
-                            easing = LinearOutSlowInEasing
-                        ),
-                        block = {
-
-                        })
+                        animationSpec = repeatable(
+                            iterations = 2,
+                            animation = keyframes {
+                                durationMillis = 2000
+                                -90f at 0
+                                0f at 500
+                                90f at 1000
+                                180f at 1500
+                                270f at 2000
+                            }
+                        )
+                    )
                 }
 
                 val anim2Result = async {
-                    animatedSweepAngle.animateTo(targetValue = 360f,
-                        animationSpec = tween(
-                            durationMillis = 2000,
-                            delayMillis = 50,
-                            easing = LinearOutSlowInEasing
-                        ),
-                        block = {
-
-                        })
+                    animatedSweepAngle.animateTo(
+                        targetValue = 0f,
+                        animationSpec = repeatable(
+                            iterations = 2,
+                            animation = keyframes {
+                                durationMillis = 2000
+                                0.0f at 0
+                                30f at 150
+                                50f at 250
+                                90f at 500
+                                0f at 2000
+                            },
+                        )
+                    )
                 }
                 awaitAll(anim1Result, anim2Result)
-
-                if (!anim1Result.isActive && !anim2Result.isActive) {
-                    animatedStartAngle.snapTo(-90f)
-                    animatedSweepAngle.snapTo(0f)
-                }
-            } else {
-                animatedStartAngle.snapTo(-90f)
-                animatedSweepAngle.snapTo(-0f)
             }
         }
     })
