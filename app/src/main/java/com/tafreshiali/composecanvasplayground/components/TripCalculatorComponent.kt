@@ -1,10 +1,10 @@
 package com.tafreshiali.composecanvasplayground.components
 
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +33,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tafreshiali.composecanvasplayground.utils.calculateAnOffsetOnCircle
@@ -51,6 +52,7 @@ import kotlin.math.min
 @ExperimentalTextApi
 @Composable
 fun TripCalculatorComponent(
+    componentSize: Dp = 450.dp,
     numbers: IntRange,
     initAngle: Int = 180
 ) {
@@ -90,7 +92,8 @@ fun TripCalculatorComponent(
     }
 
     BoxWithConstraints(modifier = Modifier
-        .size(450.dp)
+        .size(componentSize)
+        .fillMaxWidth()
         .pointerInput(true) {
             detectDragGestures(
                 onDragStart = { initialDraggedOffset: Offset ->
@@ -136,11 +139,6 @@ fun TripCalculatorComponent(
                         // Update oldDraggedAngle for the next drag event
                         oldDraggedAngle = draggedAngle
                         shouldLaunchTheAnimations = true
-                        Log.d(
-                            "ANIMATED_ANGELS",
-                            "shouldLaunchTheAnimations is $shouldLaunchTheAnimations"
-                        )
-
                     }
                 })
         }
@@ -308,7 +306,6 @@ private fun DrawScope.animatedCircular(
     startAngle: Float,
     sweepAngle: Float
 ) {
-    Log.d("ANIMATED_ANGELS", "startAngle is $startAngle and the sweepAngle is $sweepAngle")
     drawArc(
         color = Color.Black,
         startAngle = startAngle,
