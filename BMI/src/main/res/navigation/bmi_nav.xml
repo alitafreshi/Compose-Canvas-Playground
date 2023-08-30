@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bmi_nav"
+    app:startDestination="@id/genderSelectorFragment">
+
+    <fragment
+        android:id="@+id/genderSelectorFragment"
+        android:name="com.tafreshiali.bmi.GenderSelectorFragment"
+        android:label="GenderSelectorFragment" >
+        <deepLink app:uri="@string/bmi_deeplink" />
+    </fragment>
+
+</navigation>

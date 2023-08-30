@@ -1,5 +1,6 @@
 package com.tafreshiali.composecanvasplayground.presentation
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,10 +28,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 
 class HomeFragment : Fragment() {
@@ -40,9 +44,23 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = ComposeView(context = requireContext()).apply {
+
         setContent {
+
+            val context = LocalContext.current
+
             HomeScreen(onComponentClicked = { component ->
-                findNavController().navigate(component.direction)
+                component.direction?.let { destination ->
+                    findNavController().navigate(destination)
+                    return@HomeScreen
+                }
+
+                component.deepLink?.let { destinationDeepLinkAction ->
+                    findNavController().navigate(
+                        deepLink = context.getString(destinationDeepLinkAction).toUri()
+                    )
+                    return@HomeScreen
+                }
             })
         }
     }
@@ -73,6 +91,11 @@ fun HomeScreen(onComponentClicked: (Component) -> Unit) {
                     id = 3,
                     name = "TripCalculatorComponent",
                     direction = HomeFragmentDirections.actionHomeFragmentToTripCalculatorComponentFragment()
+                ),
+                Component(
+                    id = 4,
+                    name = "BmiCalculatorComponent",
+                    deepLink = com.tafreshiali.bmi.R.string.bmi_deeplink
                 )
             )
         )
@@ -117,4 +140,10 @@ fun HomeScreenPreview() {
     HomeScreen() {}
 }
 
-data class Component(val id: Int, val name: String, val direction: NavDirections)
+data class Component(
+    val id: Int,
+    val name: String,
+    val direction: NavDirections? = null,
+    val deepLink: Int? = null,
+    val navOptions: NavOptions? = null
+)

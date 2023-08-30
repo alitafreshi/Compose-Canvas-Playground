@@ -1,32 +1,22 @@
 plugins {
-    id(Plugins.androidApplication)
+    id(Plugins.androidLibrary)
     kotlin(KotlinPlugins.android)
     id(Plugins.safeArgsNavigationPlugin)
 }
 
 android {
-    namespace = Application.appId
+    namespace = NameSpaces.bmiModule
     compileSdk = Application.compileSdk
 
     defaultConfig {
-        applicationId = Application.appId
         minSdk = Application.minSdk
-        multiDexEnabled = true
-        targetSdk = Application.targetSdk
-        versionCode = Application.versionCode
-        versionName = Application.versionName
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
-        signingConfig = signingConfigs.getByName("debug")
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -36,36 +26,29 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-
     }
-
     kotlinOptions {
         jvmTarget = "17"
     }
 
     buildFeatures {
         compose = true
-        viewBinding = true
     }
-
     composeOptions {
         kotlinCompilerExtensionVersion = Compose.compose_compiler_version
     }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-
 }
 
 dependencies {
 
     implementation(AndroidX.coreKtx)
-    implementation(platform(Kotlin.kotlin_bom))
     implementation(AndroidX.lifecycleRuntimeKtx)
-    implementation(AndroidX.livedateLifcycleRuntime)
+    implementation(AndroidX.androidxAnnotation)
     implementation(AndroidX.appCompatActivity)
     implementation(AndroidX.activityKtx)
     implementation(AndroidX.fragmentKtx)
@@ -73,7 +56,6 @@ dependencies {
     androidTestImplementation(Junit.junitTestExt)
     androidTestImplementation(Junit.junitTestExtKtx)
     androidTestImplementation(Espresso.espresso)
-
 
     //COMPOSE
     implementation(platform(Compose.composeBoom))
@@ -88,13 +70,11 @@ dependencies {
     implementation(Compose.compose_constraint_layout)
     implementation(Compose.compose_viewModel)
     implementation(Compose.compose_view_binding)
+    implementation(Compose.compose_ui_util)
     debugImplementation(Compose.compose_ui_manifest)
     debugImplementation(Compose.compose_ui_tooling)
 
     //JETPACK-NAVIGATION
     implementation(Navigation.navigation_fragments)
     implementation(Navigation.navigation_kotlin_ui)
-
-    //BMI Module
-    implementation(project(Modules.bmi))
 }

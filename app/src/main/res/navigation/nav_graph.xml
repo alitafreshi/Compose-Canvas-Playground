@@ -36,9 +36,12 @@
         android:id="@+id/selectableFilledPieChartComponentFragment"
         android:name="com.tafreshiali.composecanvasplayground.presentation.SelectableFilledPieChartComponentFragment"
         android:label="SelectableFilledPieChartComponentFragment" />
+
     <fragment
         android:id="@+id/tripCalculatorComponentFragment"
         android:name="com.tafreshiali.composecanvasplayground.presentation.TripCalculatorComponentFragment"
         android:label="TripCalculatorComponentFragment" />
+
+    <include app:graph="@navigation/bmi_nav" />
 
 </navigation>

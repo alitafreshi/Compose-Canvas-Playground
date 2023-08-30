@@ -16,6 +16,7 @@ buildscript {
         classpath(Build.buildTools)
         classpath(Build.kotlinGradlePlugin)
         classpath(Navigation.navigation_gradle_safe_args)
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20")
     }
 }
 
