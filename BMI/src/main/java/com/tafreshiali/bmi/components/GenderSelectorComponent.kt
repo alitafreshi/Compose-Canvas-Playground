@@ -1,6 +1,5 @@
 package com.tafreshiali.bmi.components
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -30,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.tafreshiali.bmi.R
 import com.tafreshiali.bmi.ui.BmiPrimary
 import com.tafreshiali.bmi.ui.BmiSecondary
-import com.tafreshiali.bmi.ui.BmiTertiary
 
 @ExperimentalMaterial3Api
 @Composable
@@ -100,7 +98,9 @@ fun GenderSelectorScreen() {
                 }
 
                 Button(
-                    onClick = { },
+                    onClick = {
+
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = BmiSecondary)
                 ) {
                     Text(
