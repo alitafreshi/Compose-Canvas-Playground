@@ -77,4 +77,7 @@ dependencies {
     //JETPACK-NAVIGATION
     implementation(Navigation.navigation_fragments)
     implementation(Navigation.navigation_kotlin_ui)
+
+    //KOTLIN-IMMUTABLE-LIST
+    implementation(Kotlin.kotlinImmutableList)
 }

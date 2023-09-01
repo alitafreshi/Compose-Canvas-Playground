@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -77,12 +78,14 @@ fun BmiScreenContainer(
 @Composable
 fun GenderItem(
     modifier: Modifier = Modifier,
-    genderItem: GenderItem,
+    genderTitle: String,
     genderTitleStyle: TextStyle,
-    genderTintIconColor: Color
+    genderIcon: Int,
+    genderTintIconColor: Color,
+    isSelected: Boolean = false
 ) {
     val animatedColor by animateColorAsState(
-        if (genderItem.isSelected) BmiSecondary else BmiTertiary,
+        if (isSelected) BmiSecondary else BmiTertiary,
         label = "selectedGenderColor",
         animationSpec = tween(delayMillis = 5)
     )
@@ -102,8 +105,8 @@ fun GenderItem(
         ) {
             Icon(
                 modifier = Modifier.size(30.dp),
-                painter = painterResource(id = genderItem.genderIcon),
-                contentDescription = "",
+                painter = painterResource(id = genderIcon),
+                contentDescription = "genderIcon",
                 tint = genderTintIconColor
             )
 
@@ -113,7 +116,7 @@ fun GenderItem(
                     .height(10.dp)
             )
 
-            Text(text = genderItem.genderTitle, style = genderTitleStyle)
+            Text(text = genderTitle, style = genderTitleStyle)
         }
     }
 }
@@ -131,11 +134,8 @@ data class GenderItem(
 fun GenderItemPreview() {
     GenderItem(
         modifier = Modifier.size(100.dp),
-        genderItem = GenderItem(
-            id = 0,
-            genderTitle = "male",
-            genderIcon = R.drawable.ic_male
-        ),
+        genderTitle ="male",
+        genderIcon = R.drawable.ic_male,
         genderTintIconColor = Color.White,
         genderTitleStyle = MaterialTheme.typography.titleMedium
     )
