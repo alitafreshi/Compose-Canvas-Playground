@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,11 +18,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -37,29 +34,7 @@ import com.tafreshiali.bmi.ui.BmiSecondary
 @Composable
 fun GenderSelectorScreen() {
     val interactionSource = MutableInteractionSource()
-
-    val genderList = remember {
-        mutableStateListOf(
-            GenderItem(
-                id = 0,
-                genderTitle = "Male",
-                genderIcon = R.drawable.ic_male,
-                isSelected = true
-            ),
-            GenderItem(
-                id = 1,
-                genderTitle = "Female",
-                genderIcon = R.drawable.ic_female,
-            ),
-            GenderItem(
-                id = 2,
-                genderTitle = "Transgender",
-                genderIcon = R.drawable.ic_transgender,
-            )
-        )
-    }
-
-    /*var genderList by remember {
+    var genderList by remember {
         mutableStateOf(
             listOf(
                 GenderItem(
@@ -80,7 +55,7 @@ fun GenderSelectorScreen() {
                 )
             )
         )
-    }*/
+    }
 
     BmiScreenContainer(
         modifier = Modifier
@@ -102,21 +77,22 @@ fun GenderSelectorScreen() {
                     verticalArrangement = Arrangement.spacedBy(25.dp),
                 ) {
 
-                    itemsIndexed(
-                        genderList,
-                        key = { _, genderItem -> genderItem.id }) { index, genderItem ->
+                    items(items = genderList, key = { genderItem -> genderItem.id }) { genderItem ->
                         GenderItem(
                             modifier = Modifier
                                 .size(125.dp)
                                 .clickable(
                                     interactionSource = interactionSource,
                                     indication = null
-                                ) { genderList.map { listItem -> genderList.set(index=index, element = listItem.copy(isSelected = genderItem.id == listItem.id))} },
+                                ) {
+                                    genderList = genderList.map { listItem ->
+                                        listItem.copy(isSelected = genderItem.id == listItem.id)
+                                    }
+                                },
                             genderTitle = genderItem.genderTitle,
                             genderIcon = genderItem.genderIcon,
                             isSelected = genderItem.isSelected,
                             genderTitleStyle = MaterialTheme.typography.labelLarge.copy(color = if (genderItem.isSelected) BmiPrimary else BmiSecondary),
-                            genderTintIconColor = if (genderItem.isSelected) BmiPrimary else BmiSecondary
                         )
                     }
                 }

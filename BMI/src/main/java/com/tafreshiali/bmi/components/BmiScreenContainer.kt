@@ -23,17 +23,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tafreshiali.bmi.R
+import com.tafreshiali.bmi.ui.BmiPrimary
 import com.tafreshiali.bmi.ui.BmiSecondary
 import com.tafreshiali.bmi.ui.BmiTertiary
 
@@ -81,20 +80,26 @@ fun GenderItem(
     genderTitle: String,
     genderTitleStyle: TextStyle,
     genderIcon: Int,
-    genderTintIconColor: Color,
     isSelected: Boolean = false
 ) {
-    val animatedColor by animateColorAsState(
+    val selectedGenderAnimatedColor by animateColorAsState(
         if (isSelected) BmiSecondary else BmiTertiary,
         label = "selectedGenderColor",
         animationSpec = tween(delayMillis = 5)
     )
 
+    val selectedGenderAnimatedGenderColor by animateColorAsState(
+        if (isSelected) BmiPrimary else BmiSecondary,
+        label = "selectedGenderIconColor",
+        animationSpec = tween(delayMillis = 5)
+    )
+
     Box(
         modifier = modifier.background(
-            color = animatedColor,
+            color = selectedGenderAnimatedColor,
             shape = RoundedCornerShape(size = 45.dp)
-        ), contentAlignment = Alignment.Center
+        ),
+        contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
@@ -107,7 +112,7 @@ fun GenderItem(
                 modifier = Modifier.size(30.dp),
                 painter = painterResource(id = genderIcon),
                 contentDescription = "genderIcon",
-                tint = genderTintIconColor
+                tint = selectedGenderAnimatedGenderColor
             )
 
             Spacer(
@@ -134,9 +139,8 @@ data class GenderItem(
 fun GenderItemPreview() {
     GenderItem(
         modifier = Modifier.size(100.dp),
-        genderTitle ="male",
+        genderTitle = "male",
         genderIcon = R.drawable.ic_male,
-        genderTintIconColor = Color.White,
         genderTitleStyle = MaterialTheme.typography.titleMedium
     )
 }
